@@ -1,6 +1,6 @@
 # Data Faker
 
-快速构建强大的 Fake Data RESTful API，基于 [datafaker](https://www.datafaker.net/) 和 [vert.x](https://vertx.io/) 开发。
+快速构建灵活的 Fake Data RESTful API，基于 JDK17、[datafaker](https://www.datafaker.net/) 和 [vert.x](https://vertx.io/) 开发。
 
 ![演示](img/演示-1.gif)
 
