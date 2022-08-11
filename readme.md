@@ -11,7 +11,7 @@
 
 ### 创建 `JsonObject` 格式数据
 
-```http
+```
 POST http://localhost:9000/api/datafaker/create-object  
 Content-Type: application/json
 
@@ -50,7 +50,7 @@ Content-Type: application/json
 
 ### 创建 `JsonArray` 格式数据
 
-```http
+```
 POST http://localhost:9000/api/datafaker/create-array
 Content-Type: application/json
 
@@ -72,7 +72,7 @@ Content-Type: application/json
 ```
 返回 `201`
 
-请求 `GET http://localhost:9000/api/people/list?limit=10` 会返回
+请求 `GET http://localhost:9000/api/people/list?limit=1` 会返回
 
 ```json
 [
@@ -86,13 +86,12 @@ Content-Type: application/json
       "zipCode": 476397
     }
   }
-  // 总计10 条 
 ]
 ```
 
 ### 查看已创建接口
 
-```http
+```
 GET http://localhost:9000/api/datafaker/list
 ```
 
@@ -141,7 +140,7 @@ GET http://localhost:9000/api/datafaker/list
 
 ### 请求 Fake Data 接口
 
-```http
+```
 GET http://localhost:9000/{自定义数据路径}
 ```
 返回 `expression` 定义的数据
@@ -150,7 +149,7 @@ GET http://localhost:9000/{自定义数据路径}
 
 ### 测试 datafaker 表达式 
 
-```http
+```
 http://localhost:9000/api/datafaker/test-expression?text=%23{Name.full_name}
 ```
 
