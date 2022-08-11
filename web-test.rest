@@ -1,4 +1,4 @@
-#
+### 创建个人信息接口
 POST http://localhost:9000/api/datafaker/create-object
 Content-Type: application/json
 
@@ -18,7 +18,10 @@ Content-Type: application/json
     }
 }
 
-###
+### 查询个人信息接口
+GET http://localhost:9000/api/people
+
+### 创建所有个人信息接口
 POST http://localhost:9000/api/datafaker/create-array
 Content-Type: application/json
 
@@ -38,17 +41,14 @@ Content-Type: application/json
     }
 }
 
-###
+### 查询所有个人信息接口
+GET http://localhost:9000/api/people/list?limit=10
+
+### 查询所有已创建的接口
+GET http://localhost:9000/api/datafaker/list
+
+### 测试 datafaker 表达式
 GET http://localhost:9000/api/datafaker/test-expression?text=%23{Name.full_name}
 
 ###
-GET http://localhost:9000/api/datafaker/list
-
-###
-GET http://localhost:9000/api/people
-
-###
-GET http://localhost:9000/api/people/list?limit=5
-
-###
-GET http://localhost:9000/apife
+GET http://localhost:9000/api/not-created

@@ -2,6 +2,8 @@
 
 快速构建强大的 Fake Data RESTful API，基于 [datafaker](https://www.datafaker.net/) 和 [vert.x](https://vertx.io/) 开发。
 
+![演示](img/演示-1.gif)
+
 ## 启动
 
 1. 克隆项目到本地
