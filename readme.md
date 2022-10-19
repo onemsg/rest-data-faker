@@ -6,7 +6,7 @@
 
 - 支持创建 JSON Object 类型和 Array 类型
 - 数组数据接口支持 `limit` 参数
-- 支持丰富的数据类型（详细可参见 [DataFaker 的 Providers]()https://www.datafaker.net/documentation/providers/ ）
+- 支持丰富的数据类型（详细可参见 [DataFaker 的 Providers](https://www.datafaker.net/documentation/providers/)）
 - 支持多语言，比如英语en、中文zh_CN、韩文ko、日文ja
 
 ## 启动
@@ -39,7 +39,8 @@ Content-Type: application/json
             "street": "#{Address.streetAddress}",
             "zipCode": "#{Address.zipCode}"
         }
-    }
+    },
+    "locale": "en"    // 英语en、中文zh_CN、韩文ko、日文ja; 缺省为 中文zh_CN
 }
 ```
 返回 `201`
@@ -78,7 +79,8 @@ Content-Type: application/json
             "street": "#{Address.streetAddress}",
             "zipCode": "#{Address.zipCode}"
         }
-    }
+    },
+    "locale": "en"    // 英语en、中文zh_CN、韩文ko、日文ja; 缺省为 中文zh_CN
 }
 ```
 返回 `201`
