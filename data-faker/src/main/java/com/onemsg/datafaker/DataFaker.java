@@ -23,22 +23,40 @@ public record DataFaker(
     String name,
     String intro,
     JsonObject expression,
+    String locale,
     Supplier<JsonObject> dataProvider,
     Type type,
     LocalDateTime createdTime
 ) {
     
-    private static final Faker faker = new Faker(new Locale("zh-CN"));
+    public static final String DEFAULT_LOCALE = "zh_CN";
+
+    private static final Faker DEFAULT_FAKER = new Faker(new Locale(DEFAULT_LOCALE));
+
+    private static final Map<String, Faker> fakers = new HashMap<>();
 
     private static final AtomicInteger NEXT_ID = new AtomicInteger(1);
 
-    public static DataFaker create(String path, String name, String intro, JsonObject expression, Type type)
+    /**
+     * Create a new DataFaker object
+     * 
+     * @param path
+     * @param name
+     * @param intro
+     * @param expression
+     * @param type
+     * @return
+     * @throws NullPointerException See method source code
+     */
+    public static DataFaker create(String path, String name, String intro, JsonObject expression, String locale, Type type)
             throws NullPointerException {
         Objects.requireNonNull(path);
         Objects.requireNonNull(name);
         Objects.requireNonNull(expression);
-        var dataProvider = createSupplier(expression);
-        return new DataFaker(NEXT_ID.getAndIncrement(), path, name, intro, expression, dataProvider, type,
+        Objects.requireNonNull(locale);
+        var faker = fakers.computeIfAbsent(locale, l -> new Faker(new Locale(l)));
+        var dataProvider = createSupplier(faker, expression);
+        return new DataFaker(NEXT_ID.getAndIncrement(), path, name, intro, expression, locale, dataProvider, type,
                 LocalDateTime.now());
     }
 
@@ -50,7 +68,7 @@ public record DataFaker(
      * @throws StatusResponseException if unable to evaluate the expression
      * @see net.datafaker.Faker.expression
      */
-    public static String validateExpression(String expression) throws StatusResponseException {
+    public static String evaluationExpression(Faker faker, String expression) throws StatusResponseException {
         try {
             return faker.expression(expression);
         } catch (Exception e) {
@@ -58,21 +76,26 @@ public record DataFaker(
         }
     }
 
-    public static Supplier<JsonObject> createSupplier(JsonObject expression) throws StatusResponseException {
-        var json = createFormatJson(expression);
+    public static String validateExpression(String expression) throws StatusResponseException {
+        return evaluationExpression(DEFAULT_FAKER, expression);
+    }
+
+
+    public static Supplier<JsonObject> createSupplier(Faker faker, JsonObject expression) throws StatusResponseException {
+        var json = createFormatJson(faker, expression);
         return () -> (JsonObject) Json.decodeValue(json.generate());
     }
 
-    public static net.datafaker.fileformats.Json createFormatJson(JsonObject expression) throws StatusResponseException {
+    public static net.datafaker.fileformats.Json createFormatJson(Faker faker, JsonObject expression) throws StatusResponseException {
         var jsonBuilder = Format.toJson();
         for (String field : expression.fieldNames()) {
             Object fieldExpression0 = expression.getValue(field);
             if (fieldExpression0 instanceof JsonObject fieldExpression) {
-                var json = createFormatJson(fieldExpression);
+                var json = createFormatJson(faker, fieldExpression);
                 jsonBuilder.set(field, () -> json );
             } else if (fieldExpression0 instanceof String fieldExpression) {
                 validateExpression(fieldExpression);
-                jsonBuilder.set(field, () -> expression(fieldExpression));
+                jsonBuilder.set(field, () -> expression(faker, fieldExpression));
             } else {
                 throw StatusResponseException.create(400, "Expression {} invalid", fieldExpression0);
             }
@@ -91,6 +114,7 @@ public record DataFaker(
             .put("name", name)
             .put("intro", intro)
             .put("expression", expression)
+            .put("locale", locale)
             .put("type", type.name())
             .put("createdTime", createdTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     }
@@ -100,8 +124,7 @@ public record DataFaker(
         ARRAY
     }
 
-
-    private static Object expression(String expression) {
+    private static Object expression(Faker faker, String expression) {
         String value = faker.expression(expression);
         try {
             return Json.decodeValue(value);
@@ -110,7 +133,10 @@ public record DataFaker(
         }
     }
 
-
+    /**
+     * @deprecated
+     */
+    @Deprecated
     public static class JsonSupplier implements Supplier<JsonObject> {
 
         private final Map<String, Supplier<Object>> map;
@@ -119,13 +145,13 @@ public record DataFaker(
             this.map = Objects.requireNonNull(map);
         }
 
-        public static JsonSupplier create(JsonObject expression) throws StatusResponseException {
+        public static JsonSupplier create(Faker faker, JsonObject expression) throws StatusResponseException {
             Map<String, Supplier<Object>> map = new HashMap<>();
 
             for (String field : expression.fieldNames()) {
                 Object fieldExpression0 = expression.getValue(field);
                 if (fieldExpression0 instanceof JsonObject fieldExpression) {
-                    map.put(field, create(fieldExpression)::get);
+                    map.put(field, create(faker, fieldExpression)::get);
                 } else if (fieldExpression0 instanceof String fieldExpression) {
                     validateExpression(fieldExpression);
                     map.put(field, () -> faker.expression(fieldExpression));

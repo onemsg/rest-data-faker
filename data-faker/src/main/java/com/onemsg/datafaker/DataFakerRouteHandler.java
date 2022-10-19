@@ -2,8 +2,11 @@ package com.onemsg.datafaker;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.onemsg.datafaker.web.StatusResponseException;
@@ -17,6 +20,8 @@ import io.vertx.ext.web.RoutingContext;
 
 public class DataFakerRouteHandler {
     
+    public static final String DEFAULT_LOCALE = DataFaker.DEFAULT_LOCALE;
+
     private static final Map<String, DataFaker> store = new ConcurrentHashMap<>();
 
     public static DataFakerRouteHandler create() {
@@ -136,14 +141,25 @@ public class DataFakerRouteHandler {
         WebHandlers.must(path.startsWith("/api/"), 400, "请求体字段 [path] 必须匹配 /api/*");
 
         String name = WebHandlers.requireNonNull(data.getString("name"), 400, "请求体字段 [name] 必须存在");
+        
         String intro = data.getString("intro");
 
         WebHandlers.requireNonNull(data.getValue("expression"), 400, "请求体字段 [expression] 必须存在");
         JsonObject expression = WebHandlers.get(() -> data.getJsonObject("expression"), 400,
                 "请求体字段 [expression] 类型必须为 JsonObject");
 
-        return DataFaker.create(path, name, intro, expression, type);
+        String locale = data.getString("locale", DEFAULT_LOCALE);
+        if (!valideLocale(locale)) {
+            throw StatusResponseException.create(400, String.format("请求体字段 [locale] %s 不受支持", locale));
+        }
+
+        return DataFaker.create(path, name, intro, expression, locale, type);
     }
 
+    private static final Set<String> ALL_LOCALES = Stream.of(Locale.getAvailableLocales()).map(Locale::toString).collect(Collectors.toSet());
+
+    private static boolean valideLocale(String locale) throws StatusResponseException {
+        return ALL_LOCALES.contains(locale);
+    }
 
 }

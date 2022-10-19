@@ -1,6 +1,7 @@
 package com.onemsg.datafaker;
 
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -47,8 +48,11 @@ public class DataFakerTest {
         """;
 
         JsonObject jsonExpression = (JsonObject) Json.decodeValue(expression);
-        String data = DataFaker.createFormatJson(jsonExpression).generate();
+        String locale = "ja";
+        Faker faker2 = Faker.instance(new Locale(locale));
+        String data = DataFaker.createFormatJson(faker2, jsonExpression).generate();
         System.out.println(data);
         System.out.println( ( (JsonObject) Json.decodeValue(data) ).encodePrettily() );
     }
+
 }

@@ -15,7 +15,8 @@ Content-Type: application/json
             "street": "#{Address.streetAddress}",
             "zipCode": "#{Address.zipCode}"
         }
-    }
+    },
+    "locale": "en"
 }
 
 ### 查询个人信息接口
@@ -38,7 +39,8 @@ Content-Type: application/json
             "street": "#{Address.streetAddress}",
             "zipCode": "#{Address.zipCode}"
         }
-    }
+    },
+    "locale": "en"
 }
 
 ### 查询所有个人信息接口
