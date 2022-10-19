@@ -170,7 +170,7 @@ http://localhost:9000/api/datafaker/test-expression?text=%23{Name.full_name}
 
 - Fake JsonObject 支持 JsonArray 字段类型
 - 使用 [MUI](https://mui.com/zh/) 构建前端平台
-
+- 打包成 Native Image，可通过命令行启动
 ## 更新记录
 
 - 2022-10-19 - Fake data 支持自定义语言选项
