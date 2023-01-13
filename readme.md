@@ -17,7 +17,7 @@
 ## API使用
 
 
-- `expression`: `#{xxx}`语法参考 [DataFaker | Documentation | Expressions](https://www.datafaker.net/documentation/expressions/)
+- `expression`: `#{xxx}` 语法参考 [DataFaker | Documentation | Expressions](https://www.datafaker.net/documentation/expressions/)
 - `locale`: 参考 Java `Locale::new` 支持的参数格式
 
 ### 创建 `JsonObject` 格式数据
@@ -40,7 +40,7 @@ Content-Type: application/json
             "zipCode": "#{Address.zipCode}"
         }
     },
-    "locale": "en"    // 英语en、中文zh_CN、韩文ko、日文ja; 缺省为 中文zh_CN
+    "locale": "zh_CN"    // 英语en、中文zh_CN、韩文ko、日文ja; 缺省为 中文zh_CN
 }
 ```
 返回 `201`
@@ -80,7 +80,7 @@ Content-Type: application/json
             "zipCode": "#{Address.zipCode}"
         }
     },
-    "locale": "en"    // 英语en、中文zh_CN、韩文ko、日文ja; 缺省为 中文zh_CN
+    "locale": "zh_CN"    // 英语en、中文zh_CN、韩文ko、日文ja; 缺省为 中文zh_CN
 }
 ```
 返回 `201`
