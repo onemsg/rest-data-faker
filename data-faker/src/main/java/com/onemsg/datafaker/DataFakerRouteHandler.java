@@ -32,6 +32,7 @@ public class DataFakerRouteHandler {
         router.post("/api/datafaker/create-object").handler(this::createFakeObject);
         router.post("/api/datafaker/create-array").handler(this::createFakeArray);
         router.get("/api/datafaker/list").handler(this::listDataFaker);
+        router.delete("/api/datafaker/remove").handler(this::deleteDataFaker);
         router.get("/api/datafaker/test-expression").handler(this::testExpression);
         router.get("/api/*").handler(this::getFakeData);
     }
@@ -81,6 +82,28 @@ public class DataFakerRouteHandler {
             .toList();
         context.json(data);
     }
+
+    /**
+     * Delete data fakers
+     * @param context
+     */
+    private void deleteDataFaker(RoutingContext context) {
+        
+        int id;
+        try {
+            id = Integer.parseInt(context.queryParams().get("id"));
+        } catch (Exception e) {
+            throw StatusResponseException.create(400, "请求参数 [id] 无效");
+        }
+
+        store.values().stream()
+            .filter(o -> o.id() == id)
+            .findFirst()
+            .ifPresent(o -> store.remove(o.path()));
+
+        context.end();
+    }
+    
 
     /**
      * Test expression

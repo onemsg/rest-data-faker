@@ -1,6 +1,7 @@
 package com.onemsg.datafaker;
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
