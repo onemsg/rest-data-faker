@@ -1,21 +1,26 @@
 # Data Faker
 
-快速构建灵活的 Fake Data RESTful API，基于 JDK17、[datafaker](https://www.datafaker.net/) 和 [vert.x](https://vertx.io/) 开发。
+快速构建灵活的 Fake Data RESTful API，基于 JDK17、[DataFaker](https://www.datafaker.net/)、[Vert.X](https://vertx.io/) 和 [MUI](https://mui.com/) 构建。
 
-![演示](img/演示-1.gif)
+![演示-前端](img/演示-2.gif)
+![演示-后端](img/演示-1.gif)
 
 - 支持创建 JSON Object 类型和 Array 类型
 - 数组数据接口支持 `limit` 参数
 - 支持丰富的数据类型（详细可参见 [DataFaker 的 Providers](https://www.datafaker.net/documentation/providers/)）
 - 支持多语言，比如英语en、中文zh_CN、韩文ko、日文ja
+- 支持前端控制台管理
 
 ## 启动
 
 1. 克隆项目到本地
 2. 执行 `mvn exec:java -f .\data-faker\pom.xml` 启动服务
+3. 浏览器打开 `http://127.0.0.1:9000` 使用前端控制台
+4. 前端部分请看 [frontend/readme](./frontend/readme.md)
 
-## API使用
+> 后端默认静态路径使用 `frontend/build`
 
+## API 使用
 
 - `expression`: `#{xxx}` 语法参考 [DataFaker | Documentation | Expressions](https://www.datafaker.net/documentation/expressions/)
 - `locale`: 参考 Java `Locale::new` 支持的参数格式
@@ -45,7 +50,7 @@ Content-Type: application/json
 ```
 返回 `201`
 
-请求 `GET http://localhost:9000/api/people` 会返回
+当请求 `GET http://localhost:9000/api/people` 时会返回
 
 ```json
 {
@@ -85,7 +90,7 @@ Content-Type: application/json
 ```
 返回 `201`
 
-请求 `GET http://localhost:9000/api/people/list?limit=1` 会返回
+当请求 `GET http://localhost:9000/api/people/list?limit=1` 时会返回
 
 ```json
 [
@@ -151,6 +156,13 @@ GET http://localhost:9000/api/datafaker/list
 ]
 ```
 
+### 删除已创建的接口
+```
+DELETE http://localhost:9000/api/datafaker/remove?id={id}
+```
+
+返回 `200`
+
 ### 请求 Fake Data 接口
 
 ```
@@ -176,3 +188,4 @@ http://localhost:9000/api/datafaker/test-expression?text=%23{Name.full_name}
 ## 更新记录
 
 - 2022-10-19 - Fake data 支持自定义语言选项
+- 2023-01-15 - 增加前端控制台

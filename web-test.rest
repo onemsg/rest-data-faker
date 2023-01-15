@@ -49,6 +49,9 @@ GET http://localhost:9000/api/people/list?limit=10
 ### 查询所有已创建的接口
 GET http://localhost:9000/api/datafaker/list
 
+### 删除已创建的接口
+DELETE  http://localhost:9000/api/datafaker/remove?id=1
+
 ### 测试 datafaker 表达式
 GET http://localhost:9000/api/datafaker/test-expression?text=%23{Name.full_name}
 
