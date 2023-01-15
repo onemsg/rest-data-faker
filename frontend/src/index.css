@@ -11,3 +11,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.syntaxhighlighter {
+  max-height: 60vh;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+}

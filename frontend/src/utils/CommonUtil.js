@@ -14,5 +14,17 @@ export function formatTimeAgo(date) {
 const PATH_PATTERN = /(\/[-a-z\d%_.~+]*)+/
 
 export function checkPath(path) {
-  return PATH_PATTERN.test(path)
+  return PATH_PATTERN.test(path) && path.startsWith("/api")
+}
+
+export function isEmpty(str) {
+  return (!str || str.length === 0);
+}
+
+export function getOrElse(str, other) {
+  return isEmpty(str) ? other : str
+}
+
+export function titleString(string) {
+  return string[0].toUpperCase() + string.slice(1);
 }
