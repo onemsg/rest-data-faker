@@ -24,7 +24,7 @@ export default function Home() {
   }
 
   return (
-    <Container>
+    <Container maxWidth="lg">
       <Paper sx={ {px: 2} } >
         <TabContext value={ tab }>
           <Box sx={ { borderBottom: 1, borderColor: 'divider' } }>

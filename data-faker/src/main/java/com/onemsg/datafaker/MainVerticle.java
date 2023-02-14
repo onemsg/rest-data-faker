@@ -18,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MainVerticle extends AbstractVerticle {
 
-    private static final String STATIC_PATH = "./frontend/build";
-
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
 
@@ -29,31 +27,36 @@ public class MainVerticle extends AbstractVerticle {
 
         DataFakerRouteHandler.create().mount(router);
 
-        router.route().handler(StaticHandler.create(STATIC_PATH));
         router.route("/api/*").failureHandler(ExceptionHandler.create());
         router.route().failureHandler(ErrorHandler.create(vertx));
         
-        ConfigRetriever retriever = ConfigRetriever.create(vertx);
-        retriever.getConfig()
+        ConfigRetriever.create(vertx).getConfig()
             .onComplete(ar -> configHttpServer(startPromise, router, ar));
     }
 
     void configHttpServer(Promise<Void> startPromise, Router router, AsyncResult<JsonObject> asyncResult) {
 
         if (asyncResult.succeeded()) {
-            var config = asyncResult.result();
-            int port = config.getJsonObject("server").getInteger("port");
+            try {
+                var config = asyncResult.result();
 
-            var server = vertx.createHttpServer();
-            server.requestHandler(router)
-                    .listen(port, http -> {
-                        if (http.succeeded()) {
-                            startPromise.complete();
-                            log.info("HTTP server started on http://127.0.0.1:" + port);
-                        } else {
-                            startPromise.fail(http.cause());
-                        }
-                    });
+                String staticPath = config.getJsonObject("server").getString("staticPath");
+                router.route().order(1).handler(StaticHandler.create(staticPath));
+
+                int port = config.getJsonObject("server").getInteger("port");
+                var server = vertx.createHttpServer();
+                server.requestHandler(router)
+                        .listen(port, http -> {
+                            if (http.succeeded()) {
+                                startPromise.complete();
+                                log.info("HTTP server started on http://127.0.0.1:" + port);
+                            } else {
+                                startPromise.fail(http.cause());
+                            }
+                        });
+            } catch (Exception e) {
+                startPromise.fail(e);
+            }
         } else {
             startPromise.fail(asyncResult.cause());
         }

@@ -1,5 +1,6 @@
 {
     "server": {
-        "port": 9000
+        "port": 9000,
+        "staticPath": "./frontend/build"
     }
 }

@@ -16,7 +16,8 @@ Content-Type: application/json
             "zipCode": "#{Address.zipCode}"
         }
     },
-    "locale": "en"
+    "locale": "en",
+    "delay": "100-700"
 }
 
 ### 查询个人信息接口

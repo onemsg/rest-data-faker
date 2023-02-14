@@ -12,9 +12,14 @@ export function formatTimeAgo(date) {
 }
 
 const PATH_PATTERN = /(\/[-a-z\d%_.~+]*)+/
+const DELAY_PATTERN = /(^\d+$)|(^\d+-\d+$)/
 
 export function checkPath(path) {
   return PATH_PATTERN.test(path) && path.startsWith("/api")
+}
+
+export function checkDelay(delay) {
+  return DELAY_PATTERN.test(delay)
 }
 
 export function isEmpty(str) {

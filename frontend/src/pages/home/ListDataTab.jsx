@@ -168,7 +168,7 @@ export default function ListDataTab() {
     {
       field: "expression",
       headerName: "Expression",
-      maxWidth: 100,
+      maxWidth: 80,
       renderCell: (params) => (
         <Button variant="text" onClick={ () => showExpression(params.row.path, params.value) }>详情</Button>
       ),
@@ -184,9 +184,15 @@ export default function ListDataTab() {
       sortable: false
     },
     {
+      field: "delay",
+      headerName: "Delay (ms)",
+      maxWidth: 100,
+      sortable: false
+    },
+    {
       field: "locale",
       headerName: "Locale",
-      maxWidth: 80,
+      width: 100,
       renderCell: (params) => (
         <Chip size="small" label={ getLocaleLable(params.value) } />
       ),

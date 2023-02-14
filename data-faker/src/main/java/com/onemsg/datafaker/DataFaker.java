@@ -17,6 +17,9 @@ import io.vertx.core.json.JsonObject;
 import net.datafaker.Faker;
 import net.datafaker.fileformats.Format;
 
+/**
+ * DataFaker 对象和仓库
+ */
 public record DataFaker(
     int id,
     String path,
@@ -26,6 +29,7 @@ public record DataFaker(
     String locale,
     Supplier<JsonObject> dataProvider,
     Type type,
+    Delay delay,
     LocalDateTime createdTime
 ) {
     
@@ -44,19 +48,22 @@ public record DataFaker(
      * @param name
      * @param intro
      * @param expression
-     * @param type
+     * @param type       
+     * @param delay      nullable
      * @return
      * @throws NullPointerException See method source code
      */
-    public static DataFaker create(String path, String name, String intro, JsonObject expression, String locale, Type type)
+    public static DataFaker create(String path, String name, String intro, JsonObject expression, String locale, Type type, Delay delay)
             throws NullPointerException {
         Objects.requireNonNull(path);
         Objects.requireNonNull(name);
         Objects.requireNonNull(expression);
         Objects.requireNonNull(locale);
+        Objects.requireNonNull(delay);
         var faker = fakers.computeIfAbsent(locale, l -> new Faker(new Locale(l)));
         var dataProvider = createSupplier(faker, expression);
-        return new DataFaker(NEXT_ID.getAndIncrement(), path, name, intro, expression, locale, dataProvider, type,
+        return new DataFaker(NEXT_ID.getAndIncrement(), path, name, intro, expression, locale, dataProvider, type, 
+                delay,
                 LocalDateTime.now());
     }
 
@@ -116,6 +123,7 @@ public record DataFaker(
             .put("expression", expression)
             .put("locale", locale)
             .put("type", type.name())
+            .put("delay", delay.toText())
             .put("createdTime", createdTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     }
 

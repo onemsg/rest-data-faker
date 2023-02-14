@@ -3,13 +3,13 @@ import Editor from '@monaco-editor/react';
 import { HelpOutline } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import { LoadingButton } from '@mui/lab';
-import { Box, FormControl, FormControlLabel, FormHelperText, FormLabel, IconButton, InputLabel, MenuItem, Radio, RadioGroup, TextField, Tooltip } from "@mui/material";
+import { Box, FormControl, FormControlLabel, FormHelperText, FormLabel, IconButton, InputAdornment, InputLabel, MenuItem, Radio, RadioGroup, Slider, TextField, Tooltip } from "@mui/material";
 import { Stack } from '@mui/system';
 import ResultAlert from 'components/ResultAlert';
 import { Locales } from 'constants/index';
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { checkPath } from "utils/CommonUtil";
+import { checkDelay, checkPath } from "utils/CommonUtil";
 import * as yup from "yup";
 
 
@@ -22,7 +22,8 @@ const schema = yup.object({
   path: yup.string().test("is-path", (value) => checkPath(value),).required(),
   name: yup.string().required(),
   intro: yup.string(),
-  locale: yup.string().required()
+  locale: yup.string().required(),
+  delay: yup.string().test("is-delay", (value) => checkDelay(value))
 }).required()
 
 const openExpressionHelp = () => {
@@ -200,6 +201,19 @@ export default function CreateDataTab() {
             <FormControlLabel value="arrar" control={ <Radio /> } label="Array" />
           </RadioGroup>
         </FormControl>
+
+        <TextField
+          variant='standard'
+          label="Delay"
+          sx={ { width: "30ch" } }
+          { ...register("delay") }
+          error={ formState.errors?.delay ? true : false }
+          // @ts-ignore
+          helperText={ formState.errors?.delay?.message ?? "pattern is min or min-max" }
+          InputProps={ {
+            endAdornment: <InputAdornment position="start">ms</InputAdornment>,
+          } }
+        />
 
         <TextField select label="locale" defaultValue="zh_CN" variant='standard'
           sx={ { width: "15ch" } }

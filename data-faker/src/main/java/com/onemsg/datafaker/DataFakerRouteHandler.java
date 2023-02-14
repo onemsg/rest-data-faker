@@ -19,7 +19,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
 public class DataFakerRouteHandler {
-    
+
     public static final String DEFAULT_LOCALE = DataFaker.DEFAULT_LOCALE;
 
     private static final Map<String, DataFaker> store = new ConcurrentHashMap<>();
@@ -49,9 +49,9 @@ public class DataFakerRouteHandler {
         store.put(dataFaker.path(), dataFaker);
 
         context.response()
-            .setStatusCode(201)
-            .putHeader("Location", dataFaker.path())
-            .end();
+                .setStatusCode(201)
+                .putHeader("Location", dataFaker.path())
+                .end();
     }
 
     /**
@@ -73,22 +73,24 @@ public class DataFakerRouteHandler {
 
     /**
      * List data fakers
+     * 
      * @param context
      */
     private void listDataFaker(RoutingContext context) {
         List<JsonObject> data = store.values().stream()
-            .sorted(Comparator.<DataFaker>comparingInt(DataFaker::id).reversed())
-            .map(DataFaker::toVoJson)
-            .toList();
+                .sorted(Comparator.<DataFaker>comparingInt(DataFaker::id).reversed())
+                .map(DataFaker::toVoJson)
+                .toList();
         context.json(data);
     }
 
     /**
      * Delete data fakers
+     * 
      * @param context
      */
     private void deleteDataFaker(RoutingContext context) {
-        
+
         int id;
         try {
             id = Integer.parseInt(context.queryParams().get("id"));
@@ -97,13 +99,12 @@ public class DataFakerRouteHandler {
         }
 
         store.values().stream()
-            .filter(o -> o.id() == id)
-            .findFirst()
-            .ifPresent(o -> store.remove(o.path()));
+                .filter(o -> o.id() == id)
+                .findFirst()
+                .ifPresent(o -> store.remove(o.path()));
 
         context.end();
     }
-    
 
     /**
      * Test expression
@@ -117,16 +118,17 @@ public class DataFakerRouteHandler {
         }
         String value = DataFaker.validateExpression(text);
         context.response()
-            .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-            .end(value);
+                .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                .end(value);
     }
 
     /**
      * Get fake data
+     * 
      * @param context
      */
     private void getFakeData(RoutingContext context) {
-        
+
         String path = context.request().path();
         var dataFaker = store.get(path);
         if (dataFaker == null) {
@@ -134,27 +136,31 @@ public class DataFakerRouteHandler {
             return;
         }
 
-
         Object data = switch (dataFaker.type()) {
             case ARRAY -> {
-                int limit = WebHandlers.get(() -> Integer.parseInt(context.request().getParam("limit", "10")), 
+                int limit = WebHandlers.get(() -> Integer.parseInt(context.request().getParam("limit", "10")),
                         400, "请求参数 [limit] 无效");
 
                 JsonArray array = new JsonArray();
                 Stream.generate(dataFaker::generate)
-                    .limit(limit)
-                    .forEach(array::add);
+                        .limit(limit)
+                        .forEach(array::add);
                 yield array;
-            }    
+            }
             default -> dataFaker.generate();
         };
 
-        context.json(data);
+        long delay = dataFaker.delay().next();
+
+        if (delay < 1L) {
+            context.json(data);
+        } else {
+            context.vertx().setTimer(delay, id -> context.json(data));
+        }
     }
 
-
     private static DataFaker createDataFaker(JsonObject data, DataFaker.Type type) throws StatusResponseException {
-        
+
         if (data == null) {
             throw StatusResponseException.create(400, "请求体不能为空");
         }
@@ -164,7 +170,7 @@ public class DataFakerRouteHandler {
         WebHandlers.must(path.startsWith("/api/"), 400, "请求体字段 [path] 必须匹配 /api/*");
 
         String name = WebHandlers.requireNonNull(data.getString("name"), 400, "请求体字段 [name] 必须存在");
-        
+
         String intro = data.getString("intro");
 
         WebHandlers.requireNonNull(data.getValue("expression"), 400, "请求体字段 [expression] 必须存在");
@@ -173,13 +179,21 @@ public class DataFakerRouteHandler {
 
         String locale = data.getString("locale", DEFAULT_LOCALE);
         if (!valideLocale(locale)) {
-            throw StatusResponseException.create(400, String.format("请求体字段 [locale] %s 不受支持", locale));
+            throw StatusResponseException.create(400, String.format("请求体字段 [locale] %s 无效", locale));
+        }
+        
+        Delay delay = null;
+        try {
+            delay = Delay.create(data.getString("delay", "0"));
+        } catch (Exception e) {
+            throw StatusResponseException.create(400, "请求体字段 [delay] %s 不受支持", data.getString("delay"));
         }
 
-        return DataFaker.create(path, name, intro, expression, locale, type);
+        return DataFaker.create(path, name, intro, expression, locale, type, delay);
     }
 
-    private static final Set<String> ALL_LOCALES = Stream.of(Locale.getAvailableLocales()).map(Locale::toString).collect(Collectors.toSet());
+    private static final Set<String> ALL_LOCALES = Stream.of(Locale.getAvailableLocales()).map(Locale::toString)
+            .collect(Collectors.toSet());
 
     private static boolean valideLocale(String locale) throws StatusResponseException {
         return ALL_LOCALES.contains(locale);
