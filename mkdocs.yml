@@ -1,0 +1,4 @@
+site_name: Data Faker Docs
+theme: 
+  name: material
+repo_url: https://github.com/onemsg/data-faker
