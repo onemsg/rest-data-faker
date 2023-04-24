@@ -54,7 +54,7 @@ PATCH http://localhost:9000/api/datafaker/update?id=1
 Content-Type: application/json
 
 {
-    "description": "所有个人信息接口-2"
+    "delay": "0"
 }
 
 ### 查询所有已创建的接口

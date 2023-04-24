@@ -19,14 +19,14 @@ public class ExceptionHandler implements Handler<RoutingContext> {
 
     @Override
     public void handle(RoutingContext ctx) {
-        Throwable t = ctx.failure();
+        if (ctx.response().ended() ) return;
 
+        Throwable t = ctx.failure();
         if (t instanceof StatusResponseException e) {
             end(ctx, e.status(), e.reason(), null);
         } else if (t != null) {
             HttpServerRequest request = ctx.request();
             log.warn("Handle {} {} happened a exception", request.method(), request.path(), t);
-            System.out.println(t);
             int statusCode = ctx.statusCode() == -1 ? 500 : ctx.statusCode();
             end(ctx, statusCode, "服务器内部错误", t.getMessage());
         } else {
@@ -37,6 +37,7 @@ public class ExceptionHandler implements Handler<RoutingContext> {
 
 
     private static void end(RoutingContext ctx, int statusCode, String message, String detail) {
+        if (ctx.response().ended()) return;
         JsonObject error = ErrorModel.of(statusCode, message, detail)
                 .toJson()
                 .put("path", ctx.request().path())

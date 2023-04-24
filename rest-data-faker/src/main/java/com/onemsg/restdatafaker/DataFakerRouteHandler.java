@@ -59,7 +59,6 @@ public class DataFakerRouteHandler {
                 .map(Convertor::toJson)
                 .toList();
         context.json(data);
-        context.response().putHeader("X-ID", DEFAULT_LOCALE);
     }
 
     private void deleteDataFaker(RoutingContext context) {

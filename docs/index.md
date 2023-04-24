@@ -1,6 +1,6 @@
 # 快速开始
 
-Data Faker 可以帮助您快速构建灵活的 Fake Data RESTful API，基于 JDK17、[DataFaker](https://www.datafaker.net/)、[Vert.X](https://vertx.io/) 和 [MUI](https://mui.com/) 构建。
+Rest Data Faker 可以帮助您快速构建灵活的 Fake Data RESTful API，基于 JDK17、[DataFaker](https://www.datafaker.net/)、[Vert.X](https://vertx.io/) 和 [MUI](https://mui.com/) 构建。
 
 ![演示-前端](img/演示-2.gif){ align=left }
 

@@ -1,4 +1,4 @@
-# Data Faker
+# REST Data Faker
 
 快速构建灵活的 Fake Data RESTful API，基于 JDK17、[DataFaker](https://www.datafaker.net/)、[Vert.X](https://vertx.io/) 和 [MUI](https://mui.com/) 构建。
 

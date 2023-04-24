@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.onemsg.restdatafaker.web.ExceptionHandler;
+import com.onemsg.restdatafaker.web.TraceHandler;
 
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
@@ -41,6 +42,7 @@ public class MainVerticle extends AbstractVerticle {
 
         Router router = Router.router(vertx);
         router.route().handler(LoggerHandler.create(LoggerFormat.TINY));
+        router.route().handler(TraceHandler.create());
         router.route().handler(BodyHandler.create());
 
         DataFakerRouteHandler.create(new DataFakerService()).mount(router);

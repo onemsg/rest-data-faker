@@ -1,4 +1,4 @@
-site_name: Data Faker Docs
+site_name: Rest Data Faker Docs
 theme: 
   name: material
-repo_url: https://github.com/onemsg/data-faker
+repo_url: https://github.com/onemsg/rest-data-faker
