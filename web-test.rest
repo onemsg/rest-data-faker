@@ -1,11 +1,12 @@
 ### 创建个人信息接口
-POST http://localhost:9000/api/datafaker/create-object
+POST http://localhost:9000/api/datafaker/create
 Content-Type: application/json
 
 {
     "path": "/api/people",
+    "type": "Object",
     "name": "个人信息",
-    "intro": "个人信息接口",
+    "description": "个人信息接口",
     "expression": {
         "fullname": "#{Name.full_name}", 
         "age": "#{number.number_between '15','50'}",
@@ -24,13 +25,14 @@ Content-Type: application/json
 GET http://localhost:9000/api/people
 
 ### 创建所有个人信息接口
-POST http://localhost:9000/api/datafaker/create-array
+POST http://localhost:9000/api/datafaker/create
 Content-Type: application/json
 
 {
     "path": "/api/people/list",
+    "type": "Array",
     "name": "所有个人信息",
-    "intro": "所有个人信息接口",
+    "description": "所有个人信息接口",
     "expression": {
         "fullname": "#{Name.full_name}", 
         "age": "#{number.number_between '15','50'}",
@@ -46,6 +48,14 @@ Content-Type: application/json
 
 ### 查询所有个人信息接口
 GET http://localhost:9000/api/people/list?limit=10
+
+### 更新接口
+PATCH http://localhost:9000/api/datafaker/update?id=1
+Content-Type: application/json
+
+{
+    "description": "所有个人信息接口-2"
+}
 
 ### 查询所有已创建的接口
 GET http://localhost:9000/api/datafaker/list

@@ -1,6 +1,10 @@
-package com.onemsg.datafaker.web;
+package com.onemsg.restdatafaker.web;
 
 import java.util.function.Supplier;
+
+import com.onemsg.restdatafaker.exception.StatusResponseException;
+
+import io.vertx.ext.web.RoutingContext;
 
 public class WebHandlers {
     
@@ -23,6 +27,15 @@ public class WebHandlers {
     public static void must(boolean yes, int status, String message) throws StatusResponseException {
         if (!yes) {
             throw new StatusResponseException(status, message);
+        }
+    }
+
+    public static int intQueryParam(RoutingContext context, String name, int defaultValue) throws StatusResponseException {
+        try {
+            String value = context.queryParams().get(name);
+            return value != null ? Integer.parseInt(value) : defaultValue;
+        } catch (Exception e) {
+            throw StatusResponseException.create(400, "请求参数 [%s] 无效", name);
         }
     }
 }

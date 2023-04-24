@@ -1,4 +1,4 @@
-package com.onemsg.datafaker.web;
+package com.onemsg.restdatafaker.web;
 
 import io.vertx.core.json.JsonObject;
 

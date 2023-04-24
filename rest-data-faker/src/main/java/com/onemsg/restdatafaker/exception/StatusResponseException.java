@@ -1,4 +1,4 @@
-package com.onemsg.datafaker.web;
+package com.onemsg.restdatafaker.exception;
 
 public class StatusResponseException extends RuntimeException{
     
@@ -6,10 +6,12 @@ public class StatusResponseException extends RuntimeException{
 
     private final String reason;
 
+    public StatusResponseException(int status) {
+        this(status, null);
+    }
+
     public StatusResponseException(int status, String reason){
-        super(reason);
-        this.status = status;
-        this.reason = reason;
+        this(status, reason, null);
     }
 
     public StatusResponseException(int status, String reason, Throwable t){
@@ -24,6 +26,10 @@ public class StatusResponseException extends RuntimeException{
 
     public String reason(){
         return reason;
+    }
+
+    public static StatusResponseException create(int status) {
+        return new StatusResponseException(status);
     }
 
     public static StatusResponseException create(int status, String reason, Object...args ) {
