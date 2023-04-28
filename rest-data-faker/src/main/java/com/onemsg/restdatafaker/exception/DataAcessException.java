@@ -5,7 +5,8 @@ package com.onemsg.restdatafaker.exception;
  */
 public sealed class DataAcessException extends Exception permits
     IdNotExistedException, 
-    PathAlreadyExistedException, PathNotExistedException {
+    PathAlreadyExistedException, 
+    PathNotExistedException {
 
     public DataAcessException() {
         super();

@@ -8,9 +8,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import com.onemsg.restdatafaker.exception.ExpressionInvalidException;
 import com.onemsg.restdatafaker.exception.IdNotExistedException;
 import com.onemsg.restdatafaker.exception.PathAlreadyExistedException;
-import com.onemsg.restdatafaker.exception.StatusResponseException;
+import com.onemsg.restdatafaker.exception.ResponseStatusException;
 import com.onemsg.restdatafaker.model.FakerInfoUpdate;
 
 import io.vertx.core.json.JsonArray;
@@ -38,20 +39,29 @@ public class DataFakerService {
         return store.findAll();
     }
 
-    public void create(FakerInfo fakerInfo) throws StatusResponseException {
+    public void create(FakerInfo fakerInfo) throws ResponseStatusException {
         try {
+            DataGenerator.create(DEFAULT_FAKER, fakerInfo.expression());
             store.save(fakerInfo);
+        } catch (ExpressionInvalidException e) {
+            throw ResponseStatusException.create(400, e);
         } catch (PathAlreadyExistedException e) {
-            throw StatusResponseException.create(400, "Path [%s] 已存在", e.getPath());
+            throw ResponseStatusException.create(400, "Path [%s] 已存在", e.getPath());
         }
     }
 
-    public void update(int id, FakerInfoUpdate update) throws StatusResponseException{
+    public void update(int id, FakerInfoUpdate update) throws ResponseStatusException {
         try {
+            if (update.expression != null) {
+                DataGenerator.create(DEFAULT_FAKER, update.expression);
+            }
+
             store.update(id, update);
             generators.remove(id);
+        } catch (ExpressionInvalidException e) {
+            throw ResponseStatusException.create(400, e);
         } catch (IdNotExistedException e) {
-            throw StatusResponseException.create(400, "Id [%s] 不存在", e.getId());
+            throw ResponseStatusException.create(400, "Id [%s] 不存在", e.getId());
         }
     }
 
@@ -60,8 +70,7 @@ public class DataFakerService {
         generators.remove(id);
     }
 
-
-    public Object generatFakeData(String path, int limit) throws StatusResponseException {
+    public Object generatFakeData(String path, int limit) throws ResponseStatusException, ExpressionInvalidException {
         var fakerInfo = requireNonNull(store.findByPath(path), 404, null);
         var generator = requireNonNull(getDataGenerator(path), 404, null);
         if (fakerInfo.type() == FakerType.ARRAY) {
@@ -73,7 +82,7 @@ public class DataFakerService {
         }
     }
 
-    private DataGenerator getDataGenerator(String path) {
+    private DataGenerator getDataGenerator(String path) throws ExpressionInvalidException{
         var fakerInfo = store.findByPath(path);
         if (fakerInfo == null) return null;
         var generator = generators.get(fakerInfo.id());
@@ -90,18 +99,18 @@ public class DataFakerService {
      * 
      * @param expression
      * @return the evaluated string expression
-     * @throws StatusResponseException if unable to evaluate the expression
+     * @throws ResponseStatusException if unable to evaluate the expression
      * @see net.datafaker.Faker.expression
      */
-    public static String evaluationExpression(Faker faker, String expression) throws StatusResponseException {
+    public static String evaluationExpression(Faker faker, String expression) throws ResponseStatusException {
         try {
             return faker.expression(expression);
         } catch (Exception e) {
-            throw StatusResponseException.create(400, "Expression [%s] invalid", expression);
+            throw ResponseStatusException.create(400, "Expression [%s] invalid", expression);
         }
     }
 
-    public static String validateExpression(String expression) throws StatusResponseException {
+    public static String validateExpression(String expression) throws ResponseStatusException {
         return evaluationExpression(DEFAULT_FAKER, expression);
     }
 

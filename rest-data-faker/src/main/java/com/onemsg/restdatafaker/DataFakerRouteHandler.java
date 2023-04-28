@@ -12,7 +12,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.onemsg.restdatafaker.exception.StatusResponseException;
+import com.onemsg.restdatafaker.exception.ExpressionInvalidException;
+import com.onemsg.restdatafaker.exception.ResponseStatusException;
 import com.onemsg.restdatafaker.model.Convertor;
 import com.onemsg.restdatafaker.model.FakerInfoUpdate;
 
@@ -77,7 +78,7 @@ public class DataFakerRouteHandler {
     private void testExpression(RoutingContext context) {
         String text = context.queryParams().get("text");
         if (text == null || text.isBlank()) {
-            throw StatusResponseException.create(400, "请求参数 [text] 不能为空");
+            throw ResponseStatusException.create(400, "请求参数 [text] 不能为空");
         }
         String value = DataFakerService.validateExpression(text);
         context.response()
@@ -97,10 +98,15 @@ public class DataFakerRouteHandler {
         try {
             limit = Integer.parseInt(context.request().getParam("limit", "10"));
         } catch (Exception e) {
-            throw StatusResponseException.create(400, "请求参数 [limit] 无效");
+            throw ResponseStatusException.create(400, "请求参数 [limit] 无效");
         }
 
-        var data = service.generatFakeData(path, limit);
+        Object data;
+        try {
+            data = service.generatFakeData(path, limit);
+        } catch (ExpressionInvalidException e) {
+            throw ResponseStatusException.create(500, e);
+        }
         long delay = dataFaker.delay().next();
 
         if (delay < 1L) {
@@ -110,10 +116,10 @@ public class DataFakerRouteHandler {
         }
     }
 
-    private static FakerInfo validateCreation(JsonObject data) throws StatusResponseException {
+    private static FakerInfo validateCreation(JsonObject data) throws ResponseStatusException {
 
         if (data == null) {
-            throw StatusResponseException.create(400, "请求体不能为空");
+            throw ResponseStatusException.create(400, "请求体不能为空");
         }
 
         String path = requireNonNull(data.getString("path"), 400, "请求体字段 [path] 必须存在");
@@ -125,7 +131,7 @@ public class DataFakerRouteHandler {
         try {
             fakerType = FakerType.from(type);
         } catch (IllegalArgumentException e) {
-            throw StatusResponseException.create(400, "请求体字段 [type] %s 不受支持", type);
+            throw ResponseStatusException.create(400, "请求体字段 [type] %s 不受支持", type);
         }
 
         String name = requireNonNull(data.getString("name"), 400, "请求体字段 [name] 必须存在");
@@ -143,16 +149,16 @@ public class DataFakerRouteHandler {
         try {
             delay = Delay.create(data.getString("delay", "0"));
         } catch (Exception e) {
-            throw StatusResponseException.create(400, "请求体字段 [delay] %s 不受支持", data.getString("delay"));
+            throw ResponseStatusException.create(400, "请求体字段 [delay] %s 不受支持", data.getString("delay"));
         }
 
         return new FakerInfo(0, path, name, description, expression, locale, fakerType, delay, null, null);
     }
 
-    private static FakerInfoUpdate validateUpdate(JsonObject data) throws StatusResponseException {
+    private static FakerInfoUpdate validateUpdate(JsonObject data) throws ResponseStatusException {
 
         if (data == null) {
-            throw StatusResponseException.create(400, "请求体不能为空");
+            throw ResponseStatusException.create(400, "请求体不能为空");
         }
 
         var path = data.getString("path", null);
@@ -165,7 +171,7 @@ public class DataFakerRouteHandler {
             String type = data.getString("type", null);
             fakerType = type != null ? FakerType.from(type) : null;
         } catch (IllegalArgumentException e) {
-            throw StatusResponseException.create(400, "请求体字段 [type] %s 不受支持", data.getString("type"));
+            throw ResponseStatusException.create(400, "请求体字段 [type] %s 不受支持", data.getString("type"));
         }
 
         var name = data.getString("name", null);
@@ -185,7 +191,7 @@ public class DataFakerRouteHandler {
         try {
             delay = data.containsKey("delay") ? Delay.create(data.getString("delay")) : null;
         } catch (Exception e) {
-            throw StatusResponseException.create(400, "请求体字段 [delay] %s 不受支持", data.getString("delay"));
+            throw ResponseStatusException.create(400, "请求体字段 [delay] %s 不受支持", data.getString("delay"));
         }
 
         FakerInfoUpdate update = new FakerInfoUpdate();
@@ -202,7 +208,7 @@ public class DataFakerRouteHandler {
     private static final Set<String> ALL_LOCALES = Stream.of(Locale.getAvailableLocales()).map(Locale::toString)
             .collect(Collectors.toSet());
 
-    private static boolean valideLocale(String locale) throws StatusResponseException {
+    private static boolean valideLocale(String locale) throws ResponseStatusException {
         return ALL_LOCALES.contains(locale);
     }
 

@@ -1,6 +1,6 @@
 package com.onemsg.restdatafaker.web;
 
-import com.onemsg.restdatafaker.exception.StatusResponseException;
+import com.onemsg.restdatafaker.exception.ResponseStatusException;
 
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerRequest;
@@ -22,7 +22,7 @@ public class ExceptionHandler implements Handler<RoutingContext> {
         if (ctx.response().ended() ) return;
 
         Throwable t = ctx.failure();
-        if (t instanceof StatusResponseException e) {
+        if (t instanceof ResponseStatusException e) {
             end(ctx, e.status(), e.reason(), null);
         } else if (t != null) {
             HttpServerRequest request = ctx.request();
