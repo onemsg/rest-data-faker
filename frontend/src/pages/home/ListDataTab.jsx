@@ -143,7 +143,7 @@ export default function ListDataTab() {
     {
       field: "path",
       headerName: "Path",
-      minWidth: 120,
+      minWidth: 100,
       flex: 1,
       renderCell: (params) => {
         return (
@@ -156,11 +156,11 @@ export default function ListDataTab() {
     {
       field: "name",
       headerName: "Name",
-      minWidth: 120,
+      minWidth: 100,
       flex: 1,
       sortable: false,
       renderCell: (params) => (
-        <Tooltip title={ params.row.intro }>
+        <Tooltip title={ params.row.description }>
           <Box sx={ { textDecoration: "underline dotted" } }>{ params.value }</Box>
         </Tooltip>
       )
@@ -168,7 +168,8 @@ export default function ListDataTab() {
     {
       field: "expression",
       headerName: "Expression",
-      maxWidth: 80,
+      minWidth: 100,
+      maxWidth: 120,
       renderCell: (params) => (
         <Button variant="text" onClick={ () => showExpression(params.row.path, params.value) }>详情</Button>
       ),

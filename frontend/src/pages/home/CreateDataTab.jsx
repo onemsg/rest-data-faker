@@ -13,15 +13,15 @@ import { checkDelay, checkPath } from "utils/CommonUtil";
 import * as yup from "yup";
 
 
-const CREATE_OBJECT_API = "/api/datafaker/create-object"
-const CREATE_ARRAY_API = "/api/datafaker/create-array"
+const CREATE_API = "/api/datafaker/create"
 
 const DEFAULT_EXPRESSION_VALUE = "{\n\t\n}"
 
 const schema = yup.object({
   path: yup.string().test("is-path", (value) => checkPath(value),).required(),
+  type: yup.string().oneOf(["Object", "Array"]).required(),
   name: yup.string().required(),
-  intro: yup.string(),
+  description: yup.string(),
   locale: yup.string().required(),
   delay: yup.string().test("is-delay", (value) => checkDelay(value))
 }).required()
@@ -78,7 +78,7 @@ export default function CreateDataTab() {
 
     data = { ...data, expression: JSON.parse(expressionValue) }
 
-    const url = data.type === "array" ? CREATE_ARRAY_API : CREATE_OBJECT_API
+    const url = CREATE_API
 
     setCreating(true)
     fetch(url, {
@@ -157,9 +157,9 @@ export default function CreateDataTab() {
 
         <TextField
           variant='standard'
-          label="Intro"
+          label="Description"
           sx={ { width: "50ch" } }
-          { ...register("intro") }
+          { ...register("description") }
         />
 
         <Box sx={ { m: 1, width: "65ch" } }>
@@ -196,9 +196,9 @@ export default function CreateDataTab() {
 
         <FormControl sx={ { m: 1 } }>
           <FormLabel>Type</FormLabel>
-          <RadioGroup row defaultValue="object" { ...register("type") }>
-            <FormControlLabel value="object" control={ <Radio /> } label="Object" />
-            <FormControlLabel value="arrar" control={ <Radio /> } label="Array" />
+          <RadioGroup row defaultValue="Object" { ...register("type") }>
+            <FormControlLabel value="Object" control={ <Radio /> } label="Object" />
+            <FormControlLabel value="Array" control={ <Radio /> } label="Array" />
           </RadioGroup>
         </FormControl>
 

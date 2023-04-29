@@ -2,7 +2,7 @@
 
 快速构建灵活的 Fake Data RESTful API，基于 JDK17、[DataFaker](https://www.datafaker.net/)、[Vert.X](https://vertx.io/) 和 [MUI](https://mui.com/) 构建。
 
-- 支持创建 JSON Object 类型和 Array 类型 的 Restful API
+- 支持创建 JSON Object 类型和 Array 类型 的 RESTful API
 - 数组数据接口支持 `limit` 参数
 - 支持丰富的数据类型（详细可参见 [DataFaker 的 Providers](https://www.datafaker.net/documentation/providers/)）
 - 支持多语言，比如英语en、中文zh_CN、韩文ko、日文ja
